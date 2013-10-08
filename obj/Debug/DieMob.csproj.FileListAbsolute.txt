@@ -1,0 +1,18 @@
+C:\_JOwens\TShockPlugins\DieMob-master\bin\Debug\DieMob.dll
+C:\_JOwens\TShockPlugins\DieMob-master\bin\Debug\DieMob.pdb
+C:\_JOwens\TShockPlugins\DieMob-master\bin\Debug\Mono.Data.Sqlite.dll
+C:\_JOwens\TShockPlugins\DieMob-master\bin\Debug\MySql.Data.dll
+C:\_JOwens\TShockPlugins\DieMob-master\bin\Debug\Newtonsoft.Json.dll
+C:\_JOwens\TShockPlugins\DieMob-master\bin\Debug\TerrariaServer.exe
+C:\_JOwens\TShockPlugins\DieMob-master\bin\Debug\TShockAPI.dll
+C:\_JOwens\TShockPlugins\DieMob-master\obj\Debug\DieMob.csprojResolveAssemblyReference.cache
+C:\_JOwens\TShockPlugins\DieMob-master\obj\Debug\DieMob.dll
+C:\_JOwens\TShockPlugins\DieMob-master\obj\Debug\DieMob.pdb
+C:\Users\ja450n.OZ\Documents\GitHub\DieMob\bin\Debug\DieMob.dll
+C:\Users\ja450n.OZ\Documents\GitHub\DieMob\bin\Debug\DieMob.pdb
+C:\Users\ja450n.OZ\Documents\GitHub\DieMob\bin\Debug\MySql.Data.dll
+C:\Users\ja450n.OZ\Documents\GitHub\DieMob\obj\Debug\DieMob.csprojResolveAssemblyReference.cache
+C:\Users\ja450n.OZ\Documents\GitHub\DieMob\obj\Debug\DieMob.dll
+C:\Users\ja450n.OZ\Documents\GitHub\DieMob\obj\Debug\DieMob.pdb
+C:\Program Files (x86)\Steam\SteamApps\common\Terraria_TShockDev\ServerPlugins\DieMob.dll
+C:\Program Files (x86)\Steam\SteamApps\common\Terraria_TShockDev\ServerPlugins\DieMob.pdb

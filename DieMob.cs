@@ -4,13 +4,17 @@ using System.Linq;
 using System.IO;
 using System.Text;
 using System.Data;
-using Terraria;
-using Hooks;
-using TShockAPI;
-using TShockAPI.DB;
+
 using Mono.Data.Sqlite;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
+
+using Terraria;
+using TerrariaApi.Server;
+using TShockAPI;
+using TShockAPI.Hooks;
+using TShockAPI.DB;
+
 
 namespace DieMob
 {
@@ -29,7 +33,7 @@ namespace DieMob
         public bool AffectFriendlyNPCs = false;
         public bool AffectStatueSpawns= false;
     }
-    [APIVersion(1, 12)]
+    [ApiVersion(1, 14)]
     public class DieMobMain : TerrariaPlugin
     {
         private static IDbConnection db;
@@ -45,7 +49,7 @@ namespace DieMob
         }
         public override string Author
         {
-            get { return "by InanZen"; }
+            get { return "ja450n - pre 0.25 by InanZen"; }
         }
         public override string Description
         {
@@ -53,7 +57,7 @@ namespace DieMob
         }
         public override Version Version
         {
-            get { return new Version("0.24"); }
+            get { return new Version("0.26"); }
         }
         public DieMobMain(Main game)
             : base(game)
@@ -62,41 +66,71 @@ namespace DieMob
         }
         public override void Initialize()
         {
-            if (!Directory.Exists(savepath))
-            {
-                Directory.CreateDirectory(savepath);
-                CreateConfig();
-            }
-            SetupDb();
-            ReadConfig();
-            GameHooks.Update += OnUpdate;
-            Commands.ChatCommands.Add(new Command("diemob", DieMobCommand, "diemob", "DieMob", "dm"));
+
+            ServerApi.Hooks.GameUpdate.Register(this, (args) => { OnUpdate(); });
+            ServerApi.Hooks.GameInitialize.Register(this, OnInitialize);
 
         }
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                GameHooks.Update -= OnUpdate;
+                ServerApi.Hooks.GameUpdate.Deregister(this, (args) => { OnUpdate(); });
             }
             base.Dispose(disposing);
         }
-        private void SetupDb()
-        {          
-            string sql = Path.Combine(savepath, "DieMob.sqlite");
-            db = new SqliteConnection(string.Format("uri=file://{0},Version=3", sql));            
-            SqlTableCreator SQLcreator = new SqlTableCreator(db,(IQueryBuilder)new SqliteQueryCreator());
-            var table = new SqlTable("DieMobRegions",
-             new SqlColumn("Region", MySqlDbType.VarChar) { Primary = true, Unique = true, Length = 30 },
-             new SqlColumn("WorldID", MySqlDbType.Int32),
-             new SqlColumn("AffectFriendlyNPCs", MySqlDbType.Int32),
-             new SqlColumn("AffectStatueSpawns", MySqlDbType.Int32),
-             new SqlColumn("ReplaceMobs", MySqlDbType.Text),
-             new SqlColumn("Type", MySqlDbType.Int32)
-            );
-            SQLcreator.EnsureExists(table);
-            //
+
+
+        void OnInitialize(EventArgs e)
+        {
+            if (!Directory.Exists(savepath))
+            {
+                Directory.CreateDirectory(savepath);
+                CreateConfig();
+            }
+
+            ReadConfig();
+
+            Commands.ChatCommands.Add(new Command("diemob", DieMobCommand, "diemob", "DieMob", "dm"));
+
+            switch (TShock.Config.StorageType.ToLower())
+            {
+                case "mysql":
+                    string[] dbHost = TShock.Config.MySqlHost.Split(':');
+                    db = new MySqlConnection()
+                    {
+                        ConnectionString = string.Format("Server={0}; Port={1}; Database={2}; Uid={3}; Pwd={4};",
+                            dbHost[0],
+                            dbHost.Length == 1 ? "3306" : dbHost[1],
+                            TShock.Config.MySqlDbName,
+                            TShock.Config.MySqlUsername,
+                            TShock.Config.MySqlPassword)
+
+                    };
+                    break;
+
+                case "sqlite":
+                    string sql = Path.Combine(TShock.SavePath, "DieMob.sqlite");
+                    db = new SqliteConnection(string.Format("uri=file://{0},Version=3", sql));
+                    break;
+
+            }
+
+            SqlTableCreator sqlcreator = new SqlTableCreator(db, db.GetSqlType() == SqlType.Sqlite ? (IQueryBuilder)new SqliteQueryCreator() : new MysqlQueryCreator());
+            
+            sqlcreator.EnsureExists(new SqlTable("DieMobRegions",
+                new SqlColumn("Region", MySqlDbType.VarChar) { Primary = true, Unique = true, Length = 30 },
+                new SqlColumn("WorldID", MySqlDbType.Int32),
+                new SqlColumn("AffectFriendlyNPCs", MySqlDbType.Int32),
+                new SqlColumn("AffectStatueSpawns", MySqlDbType.Int32),
+                new SqlColumn("ReplaceMobs", MySqlDbType.Text),
+                new SqlColumn("Type", MySqlDbType.Int32)));
+
+
+
         }
+
+       
 
         class Config
         {
@@ -229,6 +263,10 @@ namespace DieMob
                 }
             }
         }
+
+
+
+
         private static void DieMobCommand(CommandArgs args)
         {
             if (args.Parameters.Count > 0 && args.Parameters[0].ToLower() == "reload")
@@ -310,7 +348,7 @@ namespace DieMob
             {
                 if (args.Parameters.Count > 1)
                 {
-                    DieMobRegion region = GetRegionByName(args.Parameters[1].ToLower());
+                    DieMobRegion region = GetRegionByName(args.Parameters[1]);
                     if (region == null)
                     {
                         args.Player.SendMessage(String.Format("Region {0} not found on DieMob list", args.Parameters[1]), Color.Red);
@@ -479,28 +517,34 @@ namespace DieMob
                 var region = TShock.Regions.GetRegionByName(regionName);
                 if (region != null && region.Name != "")
                 {
+                    Console.WriteLine("Adding region: " + region.Name);
                     RegionList.Add(new DieMobRegion() { TSRegion = region, RegionName = region.Name, AffectFriendlyNPCs = reader.Get<bool>("AffectFriendlyNPCs"), AffectStatueSpawns = reader.Get<bool>("AffectStatueSpawns"), ReplaceMobs = JsonConvert.DeserializeObject<Dictionary<int, int>>(reader.Get<string>("ReplaceMobs")), Type = (RegionType)reader.Get<int>("Type") });
                 }
                 else
+                {
+                    Console.WriteLine("Obsoleting region: " + regionName);
                     obsoleteRegions.Add(regionName);
+                }
             }            
             reader.Dispose();
             foreach (string region in obsoleteRegions)
             {
+                Console.WriteLine("Deleting region from DB: " + region);
                 db.Query("Delete from DieMobRegions where Region = @0 AND WorldID = @1", region, Main.worldID);
+
             }            
         }
         private static bool DieMob_Add(string name)
-        {           
-            db.Query("INSERT INTO DieMobRegions (Region, WorldID, AffectFriendlyNPCs, AffectStatueSpawns, Type, ReplaceMobs) VALUES (@0, @1, 0, 0, 0, @2)", name.ToLower(), Main.worldID, JsonConvert.SerializeObject(new Dictionary<int,int>()));
+        {
+            db.Query("INSERT INTO DieMobRegions (Region, WorldID, AffectFriendlyNPCs, AffectStatueSpawns, Type, ReplaceMobs) VALUES (@0, @1, 0, 0, 0, @2)", name, Main.worldID, JsonConvert.SerializeObject(new Dictionary<int, int>()));
             return true;
         }
         private static void DieMob_Delete(String name)
         {
-            db.Query("Delete from DieMobRegions where Region = @0 AND WorldID = @1", name.ToLower(), Main.worldID);
+            db.Query("Delete from DieMobRegions where Region = @0 AND WorldID = @1", name, Main.worldID);
             for (int i = RegionList.Count - 1; i >= 0; i--)
             {
-                if (RegionList[i].RegionName.ToLower() == name.ToLower())
+                if (RegionList[i].RegionName == name)
                 {
                     RegionList.RemoveAt(i);
                     break;
@@ -509,13 +553,14 @@ namespace DieMob
         }
         private static void Diemob_Update(DieMobRegion region)
         {
-            db.Query("UPDATE DieMobRegions SET AffectFriendlyNPCs = @2, AffectStatueSpawns = @3, Type = @4, ReplaceMobs = @5 where Region = @0 AND WorldID = @1", region.TSRegion.Name.ToLower(), Main.worldID, region.AffectFriendlyNPCs, region.AffectStatueSpawns, (int)region.Type, JsonConvert.SerializeObject(region.ReplaceMobs));
+            db.Query("UPDATE DieMobRegions SET AffectFriendlyNPCs = @2, AffectStatueSpawns = @3, Type = @4, ReplaceMobs = @5 where Region = @0 AND WorldID = @1", region.TSRegion.Name, Main.worldID, region.AffectFriendlyNPCs, region.AffectStatueSpawns, (int)region.Type, JsonConvert.SerializeObject(region.ReplaceMobs));
         }
+
         private static DieMobRegion GetRegionByName(string name)
         {
             foreach (DieMobRegion reg in RegionList)
             {
-                if (reg.TSRegion.Name.ToLower() == name.ToLower())
+                if (reg.TSRegion.Name == name)
                     return reg;
             }
             return null;
