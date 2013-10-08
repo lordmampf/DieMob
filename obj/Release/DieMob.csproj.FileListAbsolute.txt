@@ -16,3 +16,8 @@ C:\Users\ja450n.OZ\Documents\GitHub\DieMob\bin\Release\TerrariaServer.exe
 C:\Users\ja450n.OZ\Documents\GitHub\DieMob\bin\Release\TShockAPI.dll
 C:\Users\ja450n.OZ\Documents\GitHub\DieMob\obj\Release\DieMob.dll
 C:\Users\ja450n.OZ\Documents\GitHub\DieMob\obj\Release\DieMob.pdb
+C:\Users\jowens\Documents\GitHub\DieMob\obj\Release\DieMob.csprojResolveAssemblyReference.cache
+C:\Users\jowens\Documents\GitHub\DieMob\obj\Release\DieMob.dll
+C:\Users\jowens\Documents\GitHub\DieMob\bin\Release\DieMob.dll
+C:\Users\jowens\Documents\GitHub\DieMob\bin\Release\DieMob.pdb
+C:\Users\jowens\Documents\GitHub\DieMob\obj\Release\DieMob.pdb

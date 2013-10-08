@@ -57,7 +57,7 @@ namespace DieMob
         }
         public override Version Version
         {
-            get { return new Version("0.26"); }
+            get { return new Version("0.27"); }
         }
         public DieMobMain(Main game)
             : base(game)
@@ -67,7 +67,7 @@ namespace DieMob
         public override void Initialize()
         {
 
-            ServerApi.Hooks.GameUpdate.Register(this, (args) => { OnUpdate(); });
+            ServerApi.Hooks.GameUpdate.Register(this, OnUpdate);
             ServerApi.Hooks.GameInitialize.Register(this, OnInitialize);
 
         }
@@ -75,7 +75,8 @@ namespace DieMob
         {
             if (disposing)
             {
-                ServerApi.Hooks.GameUpdate.Deregister(this, (args) => { OnUpdate(); });
+                ServerApi.Hooks.GameInitialize.Deregister(this, OnInitialize);
+                ServerApi.Hooks.GameUpdate.Deregister(this, OnUpdate);
             }
             base.Dispose(disposing);
         }
@@ -197,7 +198,7 @@ namespace DieMob
             Console.WriteLine("Loading DieMobRegions...");
             DieMob_Read();
         }
-        private void OnUpdate()
+        private void OnUpdate(EventArgs e)
         {
             if ((DateTime.UtcNow - lastUpdate).TotalMilliseconds >= config.UpdateInterval)
             {
@@ -257,9 +258,9 @@ namespace DieMob
                     }
 
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    Log.ConsoleError(e.Message);
+                    Log.ConsoleError(ex.Message);
                 }
             }
         }
