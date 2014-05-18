@@ -21,3 +21,10 @@ C:\Users\jowens\Documents\GitHub\DieMob\obj\Release\DieMob.dll
 C:\Users\jowens\Documents\GitHub\DieMob\bin\Release\DieMob.dll
 C:\Users\jowens\Documents\GitHub\DieMob\bin\Release\DieMob.pdb
 C:\Users\jowens\Documents\GitHub\DieMob\obj\Release\DieMob.pdb
+C:\Users\Rodrigo\Desktop\TShockPlugins\DieMob-Clone\bin\Release\DieMob.dll
+C:\Users\Rodrigo\Desktop\TShockPlugins\DieMob-Clone\bin\Release\DieMob.pdb
+C:\Users\Rodrigo\Desktop\TShockPlugins\DieMob-Clone\bin\Release\MySql.Data.dll
+C:\Users\Rodrigo\Desktop\TShockPlugins\DieMob-Clone\bin\Release\Newtonsoft.Json.dll
+C:\Users\Rodrigo\Desktop\TShockPlugins\DieMob-Clone\obj\Release\DieMob.csprojResolveAssemblyReference.cache
+C:\Users\Rodrigo\Desktop\TShockPlugins\DieMob-Clone\obj\Release\DieMob.dll
+C:\Users\Rodrigo\Desktop\TShockPlugins\DieMob-Clone\obj\Release\DieMob.pdb
