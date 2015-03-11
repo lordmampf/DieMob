@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.IO;
-using System.Text;
-using System.Data;
-
-using Mono.Data.Sqlite;
+﻿using Mono.Data.Sqlite;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
-
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Linq;
 using Terraria;
 using TerrariaApi.Server;
 using TShockAPI;
@@ -56,7 +53,7 @@ namespace DieMob
 		}
 		public override Version Version
 		{
-			get { return new Version("0.28"); }
+			get { return new Version("0.29"); }
 		}
 		public DieMobMain(Main game)
 			: base(game)
@@ -118,7 +115,7 @@ namespace DieMob
 
 			SqlTableCreator sqlcreator = new SqlTableCreator(db, db.GetSqlType() == SqlType.Sqlite ? (IQueryBuilder)new SqliteQueryCreator() : new MysqlQueryCreator());
 
-			sqlcreator.EnsureExists(new SqlTable("DieMobRegions",
+			sqlcreator.EnsureTableStructure(new SqlTable("DieMobRegions",
 				new SqlColumn("Region", MySqlDbType.VarChar) { Primary = true, Unique = true, Length = 30 },
 				new SqlColumn("WorldID", MySqlDbType.Int32),
 				new SqlColumn("AffectFriendlyNPCs", MySqlDbType.Int32),
@@ -175,7 +172,7 @@ namespace DieMob
 			}
 			catch (Exception ex)
 			{
-				Log.ConsoleError(ex.Message);
+				TShock.Log.ConsoleError(ex.Message);
 				config = new Config();
 			}
 		}
@@ -199,14 +196,14 @@ namespace DieMob
 				}
 				else
 				{
-					Log.ConsoleError("DieMob config not found. Creating new one");
+					TShock.Log.ConsoleError("DieMob config not found. Creating new one");
 					CreateConfig();
 					return false;
 				}
 			}
 			catch (Exception ex)
 			{
-				Log.ConsoleError(ex.Message);
+                TShock.Log.ConsoleError(ex.Message);
 			}
 			return false;
 		}
@@ -279,7 +276,7 @@ namespace DieMob
 				}
 				catch (Exception ex)
 				{
-					Log.ConsoleError(ex.Message);
+                    TShock.Log.ConsoleError(ex.Message);
 				}
 			}
 		}
@@ -294,7 +291,7 @@ namespace DieMob
 				if (ReadConfig())
 					args.Player.SendMessage("DieMob config reloaded.", Color.BurlyWood);
 				else
-					args.Player.SendMessage("Error reading config. Check log for details.", Color.Red);
+					args.Player.SendErrorMessage("Error reading config. Check log for details.");
 				return;
 			}
 			else if (args.Parameters.Count > 0 && args.Parameters[0].ToLower() == "list")
@@ -309,27 +306,12 @@ namespace DieMob
 					}
 				}
 
-				#region OldPagination
-				//int page = 0;
-				//if (args.Parameters.Count > 1)
-				//	int.TryParse(args.Parameters[1], out page);
-				//if (page <= 0)
-				//	page = 1;
-				//page = (page - 1) * 6;
-				//args.Player.SendMessage(String.Format("Displaying DieMob regions {0} - {1}:", page + 1, page + 6), Color.LightSalmon);
-				//for (int i = page; i < RegionList.Count; i++)
-				//{
-				//	if (i < page + 6)
-				//		args.Player.SendMessage(String.Format("{0} @ X: {1}, Y: {2}", RegionList[i].TSRegion.Name, RegionList[i].TSRegion.Area.X, RegionList[i].TSRegion.Area.Y), Color.BurlyWood);
-				//}
-				#endregion
-
 				int pageNumber;
 
 				if (args.Parameters.Count < 2)
 					pageNumber = 1;
 				else if (!int.TryParse(args.Parameters[1], out pageNumber))
-					args.Player.SendErrorMessage("Invalid syntax! Proper syntax: /dm list <page number>");
+					args.Player.SendErrorMessage("Invalid syntax! Proper syntax: {0}dm list <page number>", (args.Silent ? TShock.Config.CommandSilentSpecifier : TShock.Config.CommandSpecifier));
 
 				if (!PaginationTools.TryParsePageNumber(args.Parameters, 1, args.Player, out pageNumber))
 				{
@@ -359,8 +341,8 @@ namespace DieMob
 					args.Player.SendMessage(String.Format("Type: {0}", reg.Type.ToString()), Color.LightSalmon);
 					args.Player.SendMessage(String.Format("Affects friendly NPCs: {0}", reg.AffectFriendlyNPCs ? "True" : "False"), Color.LightSalmon);
 					args.Player.SendMessage(String.Format("Affects statue spawned mobs: {0}", reg.AffectStatueSpawns ? "True" : "False"), Color.LightSalmon);
-					args.Player.SendMessage(String.Format("Replacing {0} mobs. Type '/dm replacemobsinfo RegionName [pageNum]' to get a list.",
-						reg.ReplaceMobs.Count), Color.LightSalmon);
+					args.Player.SendMessage(String.Format("Replacing {0} mobs. Type '{1}dm replacemobsinfo RegionName [pageNum]' to get a list.",
+                        reg.ReplaceMobs.Count, (args.Silent ? TShock.Config.CommandSilentSpecifier : TShock.Config.CommandSpecifier)), Color.LightSalmon);
 				}
 				return;
 			}
@@ -368,7 +350,7 @@ namespace DieMob
 			{
 				DieMobRegion reg = GetRegionByName(args.Parameters[1]);
 				if (reg == null)
-					args.Player.SendMessage(String.Format("Region {0} not found on DieMob list", args.Parameters[1]), Color.Red);
+					args.Player.SendErrorMessage("Region {0} not found on DieMob list", args.Parameters[1]);
 				else
 				{
 					int page = 0;
@@ -396,7 +378,7 @@ namespace DieMob
 					DieMobRegion region = GetRegionByName(args.Parameters[1]);
 					if (region == null)
 					{
-						args.Player.SendMessage(String.Format("Region {0} not found on DieMob list", args.Parameters[1]), Color.Red);
+						args.Player.SendErrorMessage("Region {0} not found on DieMob list", args.Parameters[1]);
 						return;
 					}
 					if (args.Parameters.Count > 2)
@@ -505,7 +487,7 @@ namespace DieMob
 						}
 					}
 				}
-				args.Player.SendMessage("/dm mod RegionName option arguments", Color.DarkOrange);
+				args.Player.SendMessage("{0}dm mod RegionName option arguments".SFormat(args.Silent ? TShock.Config.CommandSilentSpecifier : TShock.Config.CommandSpecifier), Color.DarkOrange);
 				args.Player.SendMessage("Options:", Color.LightSalmon);
 				args.Player.SendMessage("type - args: kill [default] / repel / passive", Color.LightSalmon);
 				args.Player.SendMessage("affectfriendlynpcs - args: true / false [default]", Color.LightSalmon);
@@ -527,7 +509,7 @@ namespace DieMob
 						}
 						if (!DieMob_Add(region.Name))
 						{
-							args.Player.SendMessage(String.Format("Error adding '{0}' to DieMob list. Check log for details", region.Name), Color.Red);
+							args.Player.SendErrorMessage("Error adding '{0}' to DieMob list. Check log for details", region.Name);
 							return;
 						}
 						RegionList.Add(new DieMobRegion() { TSRegion = region });
@@ -553,11 +535,11 @@ namespace DieMob
 					return;
 				}
 			}
-			args.Player.SendMessage("Syntax: /diemob [add | del] RegionName - Creates / Deletes DieMob region based on pre-existing region", Color.LightSalmon);
-			args.Player.SendMessage("Syntax: /diemob list [page number] - Lists DieMob regions", Color.LightSalmon);
-			args.Player.SendMessage("Syntax: /diemob reload - Reloads config.json file", Color.LightSalmon);
-			args.Player.SendMessage("Syntax: /diemob mod RegionName - Modifies a DieMob region", Color.LightSalmon);
-			args.Player.SendMessage("Syntax: /diemob info RegionName - Displays info for a DieMob region", Color.LightSalmon);
+			args.Player.SendMessage("Syntax: {0}diemob [add | del] RegionName - Creates / Deletes DieMob region based on pre-existing region".SFormat(args.Silent ? TShock.Config.CommandSilentSpecifier : TShock.Config.CommandSpecifier), Color.LightSalmon);
+            args.Player.SendMessage("Syntax: {0]diemob list [page number] - Lists DieMob regions".SFormat(args.Silent ? TShock.Config.CommandSilentSpecifier : TShock.Config.CommandSpecifier), Color.LightSalmon);
+            args.Player.SendMessage("Syntax: {0}diemob reload - Reloads config.json file".SFormat(args.Silent ? TShock.Config.CommandSilentSpecifier : TShock.Config.CommandSpecifier), Color.LightSalmon);
+            args.Player.SendMessage("Syntax: {0}diemob mod RegionName - Modifies a DieMob region".SFormat(args.Silent ? TShock.Config.CommandSilentSpecifier : TShock.Config.CommandSpecifier), Color.LightSalmon);
+            args.Player.SendMessage("Syntax: {0}diemob info RegionName - Displays info for a DieMob region".SFormat(args.Silent ? TShock.Config.CommandSilentSpecifier : TShock.Config.CommandSpecifier), Color.LightSalmon);
 		}
 		private static void DieMob_Read()
 		{
