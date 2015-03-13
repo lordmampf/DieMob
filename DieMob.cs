@@ -116,7 +116,8 @@ namespace DieMob
 			SqlTableCreator sqlcreator = new SqlTableCreator(db, db.GetSqlType() == SqlType.Sqlite ? (IQueryBuilder)new SqliteQueryCreator() : new MysqlQueryCreator());
 
 			sqlcreator.EnsureTableStructure(new SqlTable("DieMobRegions",
-				new SqlColumn("Region", MySqlDbType.VarChar) { Primary = true, Unique = true, Length = 30 },
+				new SqlColumn("ID", MySqlDbType.Int32) { Primary = true, Unique = true, AutoIncrement = true, Length = 6},
+				new SqlColumn("Region", MySqlDbType.VarChar) { Length = 30 },
 				new SqlColumn("WorldID", MySqlDbType.Int32),
 				new SqlColumn("AffectFriendlyNPCs", MySqlDbType.Int32),
 				new SqlColumn("AffectStatueSpawns", MySqlDbType.Int32),
@@ -151,24 +152,24 @@ namespace DieMob
 				135,
 				136,
 				210,
-				211
+				211,
+				261,
+				263,
+				264,
+				265,
+				267,
+				371,
+				372,
+				373
 			};
 		}
 		private static void CreateConfig()
 		{
 			string filepath = Path.Combine(savepath, "config.json");
+
 			try
 			{
-				using (var stream = new FileStream(filepath, FileMode.Create, FileAccess.Write, FileShare.Write))
-				{
-					using (var sr = new StreamWriter(stream))
-					{
-						config = new Config();
-						var configString = JsonConvert.SerializeObject(config, Formatting.Indented);
-						sr.Write(configString);
-					}
-					stream.Close();
-				}
+				File.WriteAllText(filepath, JsonConvert.SerializeObject(new Config(), Formatting.Indented));
 			}
 			catch (Exception ex)
 			{
@@ -183,15 +184,7 @@ namespace DieMob
 			{
 				if (File.Exists(filepath))
 				{
-					using (var stream = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.Read))
-					{
-						using (var sr = new StreamReader(stream))
-						{
-							var configString = sr.ReadToEnd();
-							config = JsonConvert.DeserializeObject<Config>(configString);
-						}
-						stream.Close();
-					}
+					config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(filepath));
 					return true;
 				}
 				else
@@ -210,7 +203,6 @@ namespace DieMob
 
 		private static void OnWorldLoad()
 		{
-			Console.WriteLine("Loading DieMobRegions...");
 			DieMob_Read();
 		}
 		private void OnUpdate(EventArgs e)
@@ -227,7 +219,8 @@ namespace DieMob
 				{
 					for (int r = 0; r < RegionList.Count; r++)
 					{
-						if (RegionList[r].TSRegion == null)
+						Region reg = TShock.Regions.GetRegionByName(RegionList[r].TSRegion.Name);
+						if (reg == null)
 						{
 
 							db.Query("DELETE FROM DieMobRegions WHERE Region=@0 AND WorldID=@1", RegionList[r].TSRegion.Name, Main.worldID);
@@ -552,7 +545,6 @@ namespace DieMob
 				var region = TShock.Regions.GetRegionByName(regionName);
 				if (region != null && region.Name != "")
 				{
-					Console.WriteLine("Adding region: " + region.Name);
 					RegionList.Add(new DieMobRegion()
 					{
 						TSRegion = region,
@@ -565,7 +557,6 @@ namespace DieMob
 				}
 				else
 				{
-					Console.WriteLine("Obsoleting region: " + regionName);
 					obsoleteRegions.Add(regionName);
 				}
 			}

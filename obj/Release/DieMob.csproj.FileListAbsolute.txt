@@ -33,7 +33,6 @@ C:\Users\Clay\Documents\GitHub\DieMob\bin\Release\DieMob.pdb
 C:\Users\Clay\Documents\GitHub\DieMob\bin\Release\TerrariaServer.exe
 C:\Users\Clay\Documents\GitHub\DieMob\bin\Release\TShockAPI.dll
 C:\Users\Clay\Documents\GitHub\DieMob\bin\Release\HttpServer.dll
-C:\Users\Clay\Documents\GitHub\DieMob\bin\Release\TerrariaServer.pdb
 C:\Users\Clay\Documents\GitHub\DieMob\obj\Release\DieMob.csprojResolveAssemblyReference.cache
 C:\Users\Clay\Documents\GitHub\DieMob\obj\Release\DieMob.dll
 C:\Users\Clay\Documents\GitHub\DieMob\obj\Release\DieMob.pdb
