@@ -53,7 +53,7 @@ namespace DieMob
 		}
 		public override Version Version
 		{
-			get { return new Version("0.29"); }
+			get { return new Version("0.30"); }
 		}
 		public DieMobMain(Main game)
 			: base(game)
