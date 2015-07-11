@@ -29,7 +29,7 @@ namespace DieMob
 		public bool AffectFriendlyNPCs = false;
 		public bool AffectStatueSpawns = false;
 	}
-	[ApiVersion(1, 17)]
+	[ApiVersion(1, 19)]
 	public class DieMobMain : TerrariaPlugin
 	{
 		private static IDbConnection db;
@@ -53,7 +53,7 @@ namespace DieMob
 		}
 		public override Version Version
 		{
-			get { return new Version("0.30"); }
+			get { return new Version("0.31"); }
 		}
 		public DieMobMain(Main game)
 			: base(game)
