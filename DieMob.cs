@@ -64,7 +64,7 @@ namespace DieMob
 		{
 
 			ServerApi.Hooks.GameUpdate.Register(this, OnUpdate);
-			ServerApi.Hooks.GameInitialize.Register(this, OnInitialize);
+			ServerApi.Hooks.GameInitialize.Register(this, OnInitialize, 1);
             RegionHooks.RegionDeleted += onRegionDelete;
 
 		}
