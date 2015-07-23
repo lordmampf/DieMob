@@ -10,7 +10,7 @@ using Terraria;
 using TerrariaApi.Server;
 using TShockAPI;
 using TShockAPI.DB;
-
+using TShockAPI.Hooks;
 
 namespace DieMob
 {
@@ -29,7 +29,7 @@ namespace DieMob
 		public bool AffectFriendlyNPCs = false;
 		public bool AffectStatueSpawns = false;
 	}
-	[ApiVersion(1, 19)]
+	[ApiVersion(1, 20)]
 	public class DieMobMain : TerrariaPlugin
 	{
 		private static IDbConnection db;
@@ -45,7 +45,7 @@ namespace DieMob
 		}
 		public override string Author
 		{
-			get { return "ja450n - pre 0.25 by InanZen"; }
+			get { return "Zaicon"; }
 		}
 		public override string Description
 		{
@@ -53,7 +53,7 @@ namespace DieMob
 		}
 		public override Version Version
 		{
-			get { return new Version("0.32"); }
+			get { return new Version("0.34"); }
 		}
 		public DieMobMain(Main game)
 			: base(game)
@@ -65,15 +65,27 @@ namespace DieMob
 
 			ServerApi.Hooks.GameUpdate.Register(this, OnUpdate);
 			ServerApi.Hooks.GameInitialize.Register(this, OnInitialize);
+            RegionHooks.RegionDeleted += onRegionDelete;
 
 		}
-		protected override void Dispose(bool disposing)
+
+        private void onRegionDelete(RegionHooks.RegionDeletedEventArgs args)
+        {
+            if (RegionList.Exists(p => p.RegionName == args.Region.Name))
+            {
+                RegionList.RemoveAll(p => p.RegionName == args.Region.Name);
+                db.Query($"DELETE FROM DieMob WHERE Region='{args.Region.Name}' AND WorldID={Main.worldID.ToString()};");
+            }
+        }
+
+        protected override void Dispose(bool disposing)
 		{
 			if (disposing)
 			{
 				ServerApi.Hooks.GameInitialize.Deregister(this, OnInitialize);
 				ServerApi.Hooks.GameUpdate.Deregister(this, OnUpdate);
-			}
+                RegionHooks.RegionDeleted -= onRegionDelete;
+            }
 			base.Dispose(disposing);
 		}
 
@@ -134,34 +146,153 @@ namespace DieMob
 		{
 			public int UpdateInterval = 1000;
 			public float RepelPowerModifier = 1.0f;
-			public int[] MobsWith0ValueButNotStatueSpawn = new int[]
-			{
-				5,
-				25,
-				30,
-				33,
-				72,
-				112,
-				115,
-				116,
-				121,
-				128,
-				129,
-				130,
-				131,
-				135,
-				136,
-				210,
-				211,
-				261,
-				263,
-				264,
-				265,
-				267,
-				371,
-				372,
-				373
-			};
+            public int[] MobsWith0ValueButNotStatueSpawn = new int[]
+            {
+                  0,
+  5,
+  17,
+  18,
+  19,
+  20,
+  22,
+  25,
+  30,
+  33,
+  36,
+  37,
+  38,
+  54,
+  68,
+  70,
+  72,
+  76,
+  105,
+  106,
+  107,
+  108,
+  112,
+  115,
+  116,
+  117,
+  118,
+  119,
+  121,
+  123,
+  124,
+  128,
+  129,
+  130,
+  131,
+  135,
+  136,
+  139,
+  142,
+  146,
+  149,
+  160,
+  178,
+  195,
+  207,
+  208,
+  209,
+  210,
+  211,
+  227,
+  228,
+  229,
+  230,
+  246,
+  247,
+  248,
+  249,
+  261,
+  263,
+  264,
+  265,
+  267,
+  303,
+  328,
+  337,
+  353,
+  354,
+  363,
+  365,
+  368,
+  369,
+  371,
+  372,
+  373,
+  375,
+  376,
+  384,
+  387,
+  392,
+  393,
+  394,
+  395,
+  396,
+  397,
+  398,
+  399,
+  400,
+  401,
+  402,
+  403,
+  404,
+  405,
+  406,
+  407,
+  408,
+  409,
+  410,
+  411,
+  412,
+  413,
+  414,
+  415,
+  416,
+  417,
+  418,
+  419,
+  420,
+  421,
+  422,
+  423,
+  424,
+  425,
+  426,
+  427,
+  428,
+  429,
+  437,
+  438,
+  440,
+  441,
+  453,
+  454,
+  455,
+  456,
+  457,
+  458,
+  459,
+  472,
+  478,
+  479,
+  488,
+  491,
+  492,
+  493,
+  507,
+  516,
+  517,
+  518,
+  519,
+  520,
+  521,
+  522,
+  523,
+  534
+            };
 		}
 		private static void CreateConfig()
 		{
@@ -228,6 +359,7 @@ namespace DieMob
 							continue;
 						}
 						DieMobRegion Region = RegionList[r];
+                        Region.TSRegion = reg;
 						for (int i = 0; i < Main.npc.Length; i++)
 						{
 							if (Main.npc[i].active)
@@ -258,7 +390,8 @@ namespace DieMob
 										else if (Region.Type == RegionType.Kill)
 										{
 											Main.npc[i].netDefaults(0);
-											TSPlayer.Server.StrikeNPC(i, 99999, 90f, 1);
+                                            Main.npc[i].active = false;
+                                            TSPlayer.Server.StrikeNPC(i, 99999, 90f, 1);
 										}
 									}
 								}
