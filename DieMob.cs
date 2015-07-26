@@ -22,12 +22,20 @@ namespace DieMob
 	}
 	public class DieMobRegion
 	{
-		public string RegionName;
-		public Region TSRegion = null;
-		public RegionType Type = RegionType.Kill;
-		public Dictionary<int, int> ReplaceMobs = new Dictionary<int, int>();
-		public bool AffectFriendlyNPCs = false;
-		public bool AffectStatueSpawns = false;
+        public Region TSRegion;
+        public RegionType Type;
+        public Dictionary<int, int> ReplaceMobs;
+        public bool AffectFriendlyNPCs;
+        public bool AffectStatueSpawns;
+
+        public DieMobRegion(Region _reg)
+        {
+            TSRegion = _reg;
+            Type = RegionType.Kill;
+            ReplaceMobs = new Dictionary<int, int>();
+            AffectFriendlyNPCs = false;
+            AffectStatueSpawns = false;
+        }
 	}
 	[ApiVersion(1, 20)]
 	public class DieMobMain : TerrariaPlugin
@@ -71,9 +79,9 @@ namespace DieMob
 
         private void onRegionDelete(RegionHooks.RegionDeletedEventArgs args)
         {
-            if (RegionList.Exists(p => p.RegionName == args.Region.Name))
+            if (RegionList.Exists(p => p.TSRegion.Name == args.Region.Name))
             {
-                RegionList.RemoveAll(p => p.RegionName == args.Region.Name);
+                RegionList.RemoveAll(p => p.TSRegion.Name == args.Region.Name);
                 db.Query($"DELETE FROM DieMob WHERE Region='{args.Region.Name}' AND WorldID={Main.worldID.ToString()};");
             }
         }
@@ -148,150 +156,119 @@ namespace DieMob
 			public float RepelPowerModifier = 1.0f;
             public int[] MobsWith0ValueButNotStatueSpawn = new int[]
             {
-                  0,
-  5,
-  17,
-  18,
-  19,
-  20,
-  22,
-  25,
-  30,
-  33,
-  36,
-  37,
-  38,
-  54,
-  68,
-  70,
-  72,
-  76,
-  105,
-  106,
-  107,
-  108,
-  112,
-  115,
-  116,
-  117,
-  118,
-  119,
-  121,
-  123,
-  124,
-  128,
-  129,
-  130,
-  131,
-  135,
-  136,
-  139,
-  142,
-  146,
-  149,
-  160,
-  178,
-  195,
-  207,
-  208,
-  209,
-  210,
-  211,
-  227,
-  228,
-  229,
-  230,
-  246,
-  247,
-  248,
-  249,
-  261,
-  263,
-  264,
-  265,
-  267,
-  303,
-  328,
-  337,
-  353,
-  354,
-  363,
-  365,
-  368,
-  369,
-  371,
-  372,
-  373,
-  375,
-  376,
-  384,
-  387,
-  392,
-  393,
-  394,
-  395,
-  396,
-  397,
-  398,
-  399,
-  400,
-  401,
-  402,
-  403,
-  404,
-  405,
-  406,
-  407,
-  408,
-  409,
-  410,
-  411,
-  412,
-  413,
-  414,
-  415,
-  416,
-  417,
-  418,
-  419,
-  420,
-  421,
-  422,
-  423,
-  424,
-  425,
-  426,
-  427,
-  428,
-  429,
-  437,
-  438,
-  440,
-  441,
-  453,
-  454,
-  455,
-  456,
-  457,
-  458,
-  459,
-  472,
-  478,
-  479,
-  488,
-  491,
-  492,
-  493,
-  507,
-  516,
-  517,
-  518,
-  519,
-  520,
-  521,
-  522,
-  523,
-  534
+                          5,
+        25,
+        30,
+        33,
+        36,
+        68,
+        70,
+        72,
+        76,
+        112,
+        115,
+        116,
+        117,
+        118,
+        119,
+        121,
+        128,
+        129,
+        130,
+        131,
+        135,
+        136,
+        139,
+        146,
+        149,
+        195,
+        210,
+        211,
+        230,
+        246,
+        247,
+        248,
+        249,
+        261,
+        263,
+        264,
+        265,
+        267,
+        303,
+        328,
+        337,
+        363,
+        365,
+        371,
+        372,
+        373,
+        375,
+        384,
+        387,
+        392,
+        393,
+        394,
+        395,
+        396,
+        397,
+        398,
+        399,
+        400,
+        401,
+        402,
+        403,
+        404,
+        405,
+        406,
+        407,
+        408,
+        409,
+        410,
+        411,
+        412,
+        413,
+        414,
+        415,
+        416,
+        417,
+        418,
+        419,
+        420,
+        421,
+        422,
+        423,
+        424,
+        425,
+        426,
+        427,
+        428,
+        429,
+        437,
+        438,
+        440,
+        454,
+        455,
+        456,
+        457,
+        458,
+        459,
+        472,
+        478,
+        479,
+        488,
+        491,
+        492,
+        493,
+        507,
+        516,
+        517,
+        518,
+        519,
+        520,
+        521,
+        522,
+        523,
+        534
             };
 		}
 		private static void CreateConfig()
@@ -427,7 +404,7 @@ namespace DieMob
 					var regManReg = TShock.Regions.GetRegionByName(RegionList[r].TSRegion.Name);
 					if (RegionList[r].TSRegion == null || regManReg == null || regManReg.Name == "")
 					{
-						db.Query("DELETE FROM DieMobRegions WHERE Region=@0 AND WorldID=@1", RegionList[r].RegionName, Main.worldID);
+						db.Query("DELETE FROM DieMobRegions WHERE Region=@0 AND WorldID=@1", RegionList[r].TSRegion.Name, Main.worldID);
 						RegionList.RemoveAt(r);
 					}
 				}
@@ -463,7 +440,7 @@ namespace DieMob
 					args.Player.SendMessage(String.Format("Region {0} not found on DieMob list", args.Parameters[1]), Color.Red);
 				else
 				{
-					args.Player.SendMessage(String.Format("DieMob region: {0}", reg.RegionName), Color.DarkOrange);
+					args.Player.SendMessage(String.Format("DieMob region: {0}", reg.TSRegion.Name), Color.DarkOrange);
 					args.Player.SendMessage(String.Format("Type: {0}", reg.Type.ToString()), Color.LightSalmon);
 					args.Player.SendMessage(String.Format("Affects friendly NPCs: {0}", reg.AffectFriendlyNPCs ? "True" : "False"), Color.LightSalmon);
 					args.Player.SendMessage(String.Format("Affects statue spawned mobs: {0}", reg.AffectStatueSpawns ? "True" : "False"), Color.LightSalmon);
@@ -484,7 +461,7 @@ namespace DieMob
 					if (page <= 0)
 						page = 1;
 					int startIndex = (page - 1) * 6;
-					args.Player.SendMessage(String.Format("{0} mob replacements page {1}:", reg.RegionName, page), Color.LightSalmon);
+					args.Player.SendMessage(String.Format("{0} mob replacements page {1}:", reg.TSRegion.Name, page), Color.LightSalmon);
 					for (int i = startIndex; i < reg.ReplaceMobs.Count; i++)
 					{
 						if (i < startIndex + 6)
@@ -637,13 +614,13 @@ namespace DieMob
 							args.Player.SendErrorMessage("Error adding '{0}' to DieMob list. Check log for details", region.Name);
 							return;
 						}
-						RegionList.Add(new DieMobRegion() { TSRegion = region });
+                        RegionList.Add(new DieMobRegion(region));
 						args.Player.SendMessage(String.Format("Region '{0}' added to DieMob list", region.Name), Color.BurlyWood);
 						return;
 					}
 					else if (args.Parameters[0].ToLower() == "del")
 					{
-						if (!RegionList.Select(r => r.TSRegion).Contains(region))
+						if (!RegionList.Exists(r => r.TSRegion.Name == region.Name))
 						{
 							args.Player.SendMessage(String.Format("Region '{0}' is not on the DieMob list", region.Name), Color.LightSalmon);
 							return;
@@ -656,7 +633,7 @@ namespace DieMob
 				}
 				else
 				{
-					args.Player.SendMessage(String.Format("Region '{0}' not found", args.Parameters[1]), Color.Red);
+					args.Player.SendErrorMessage($"Region '{args.Parameters[1]}' not found.");
 					return;
 				}
 			}
@@ -678,10 +655,8 @@ namespace DieMob
 				var region = TShock.Regions.GetRegionByName(regionName);
 				if (region != null && region.Name != "")
 				{
-					RegionList.Add(new DieMobRegion()
+					RegionList.Add(new DieMobRegion(region)
 					{
-						TSRegion = region,
-						RegionName = region.Name,
 						AffectFriendlyNPCs = reader.Get<bool>("AffectFriendlyNPCs"),
 						AffectStatueSpawns = reader.Get<bool>("AffectStatueSpawns"),
 						ReplaceMobs = JsonConvert.DeserializeObject<Dictionary<int, int>>(reader.Get<string>("ReplaceMobs")),
@@ -712,9 +687,10 @@ namespace DieMob
 			db.Query("DELETE FROM DieMobRegions WHERE Region=@0 AND WorldID=@1", name, Main.worldID);
 			for (int i = 0; i < RegionList.Count; i++)
 			{
-				if (RegionList[i].RegionName == name)
+				if (RegionList[i].TSRegion.Name == name)
 				{
-					RegionList.RemoveAt(i);
+
+                    RegionList.RemoveAt(i);
 					break;
 				}
 			}
