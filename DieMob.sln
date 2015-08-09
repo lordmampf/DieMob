@@ -5,19 +5,6 @@ VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DieMob", "DieMob.csproj", "{57F25333-F851-4B0D-8183-8EF35DACB1A0}"
 EndProject
-Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "TerrariaServer", "..\..\..\Desktop\TShock 4.3.6 Pre-Release\TerrariaServer.exe", "{1E535A1C-200B-4EC0-A77A-3960BFD2027D}"
-	ProjectSection(DebuggerProjectSystem) = preProject
-		PortSupplier = 00000000-0000-0000-0000-000000000000
-		Executable = C:\Users\Zaicon\Desktop\TShock 4.3.6 Pre-Release\TerrariaServer.exe
-		RemoteMachine = CLAY-LAPTOP
-		StartingDirectory = C:\Users\Zaicon\Desktop\TShock 4.3.6 Pre-Release
-		Environment = Default
-		LaunchingEngine = 00000000-0000-0000-0000-000000000000
-		UseLegacyDebugEngines = No
-		LaunchSQLEngine = No
-		AttachLaunchAction = No
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,10 +21,6 @@ Global
 		{57F25333-F851-4B0D-8183-8EF35DACB1A0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{57F25333-F851-4B0D-8183-8EF35DACB1A0}.Release|x86.ActiveCfg = Release|Any CPU
 		{57F25333-F851-4B0D-8183-8EF35DACB1A0}.Release|x86.Build.0 = Release|Any CPU
-		{1E535A1C-200B-4EC0-A77A-3960BFD2027D}.Debug|Any CPU.ActiveCfg = Release|x86
-		{1E535A1C-200B-4EC0-A77A-3960BFD2027D}.Debug|x86.ActiveCfg = Release|x86
-		{1E535A1C-200B-4EC0-A77A-3960BFD2027D}.Release|Any CPU.ActiveCfg = Release|x86
-		{1E535A1C-200B-4EC0-A77A-3960BFD2027D}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
