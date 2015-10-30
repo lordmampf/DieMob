@@ -61,7 +61,7 @@ namespace DieMob
 		}
 		public override Version Version
 		{
-			get { return new Version("0.36"); }
+			get { return new Version("0.37"); }
 		}
 		public DieMobMain(Main game)
 			: base(game)
@@ -349,7 +349,7 @@ namespace DieMob
 									{
 										if (Region.ReplaceMobs.ContainsKey(npc.netID))
 										{
-											npc.SetDefaults(Region.ReplaceMobs[npc.netID]);
+                                            npc.netDefaults(Region.ReplaceMobs[npc.netID]);
 											NetMessage.SendData((int)PacketTypes.NpcUpdate, -1, -1, "", i);
 										}
 										else if (Region.Type == RegionType.Repel)
