@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Terraria;
 using TerrariaApi.Server;
 using TShockAPI;
@@ -37,7 +38,7 @@ namespace DieMob
             AffectStatueSpawns = false;
         }
 	}
-	[ApiVersion(1, 22)]
+	[ApiVersion(1, 24)]
 	public class DieMobMain : TerrariaPlugin
 	{
 		private static IDbConnection db;
@@ -61,7 +62,7 @@ namespace DieMob
 		}
 		public override Version Version
 		{
-			get { return new Version("0.38"); }
+			get { return Assembly.GetExecutingAssembly().GetName().Version; }
 		}
 		public DieMobMain(Main game)
 			: base(game)
