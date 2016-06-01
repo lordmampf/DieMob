@@ -14,7 +14,7 @@ using TShockAPI.Hooks;
 
 namespace DieMob
 {
-	public enum RegionType
+    public enum RegionType
 	{
 		Kill = 0,
 		Repel = 1,
@@ -37,7 +37,7 @@ namespace DieMob
             AffectStatueSpawns = false;
         }
 	}
-	[ApiVersion(1, 22)]
+	[ApiVersion(1, 23)]
 	public class DieMobMain : TerrariaPlugin
 	{
 		private static IDbConnection db;
