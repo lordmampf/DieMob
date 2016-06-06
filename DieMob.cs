@@ -148,129 +148,10 @@ namespace DieMob
 
 		}
 
-
-
 		class Config
 		{
 			public int UpdateInterval = 1000;
 			public float RepelPowerModifier = 1.0f;
-            //THX YOR WE DON'T NEED THIS ANY MORE!
-        //    public int[] MobsWith0ValueButNotStatueSpawn = new int[]
-        //    {
-        //                  5,
-        //25,
-        //30,
-        //33,
-        //36,
-        //68,
-        //70,
-        //72,
-        //76,
-        //112,
-        //115,
-        //116,
-        //117,
-        //118,
-        //119,
-        //121,
-        //128,
-        //129,
-        //130,
-        //131,
-        //135,
-        //136,
-        //139,
-        //146,
-        //149,
-        //195,
-        //210,
-        //211,
-        //230,
-        //246,
-        //247,
-        //248,
-        //249,
-        //261,
-        //263,
-        //264,
-        //265,
-        //267,
-        //303,
-        //328,
-        //337,
-        //363,
-        //365,
-        //371,
-        //372,
-        //373,
-        //375,
-        //384,
-        //387,
-        //392,
-        //393,
-        //394,
-        //395,
-        //396,
-        //397,
-        //398,
-        //399,
-        //400,
-        //401,
-        //402,
-        //403,
-        //404,
-        //405,
-        //406,
-        //407,
-        //408,
-        //409,
-        //410,
-        //411,
-        //412,
-        //413,
-        //414,
-        //415,
-        //416,
-        //417,
-        //418,
-        //419,
-        //420,
-        //421,
-        //422,
-        //423,
-        //424,
-        //425,
-        //426,
-        //427,
-        //428,
-        //429,
-        //437,
-        //438,
-        //440,
-        //454,
-        //455,
-        //456,
-        //457,
-        //458,
-        //459,
-        //472,
-        //478,
-        //479,
-        //488,
-        //491,
-        //492,
-        //493,
-        //507,
-        //516,
-        //517,
-        //518,
-        //519,
-        //520,
-        //521,
-        //522,
-        //523,
-        //534
-        //    };
 		}
 		private static void CreateConfig()
 		{
@@ -343,9 +224,9 @@ namespace DieMob
 							if (Main.npc[i].active)
 							{
 								NPC npc = Main.npc[i];
-								if ((npc.friendly && Region.AffectFriendlyNPCs) ||
-                                    (!npc.friendly && npc.SpawnedFromStatue && Region.AffectStatueSpawns) ||
-                                    (!npc.friendly && !npc.SpawnedFromStatue && npc.value > 0))
+								if ((npc.friendly && Region.AffectFriendlyNPCs && npc.netID != 488) ||
+                                    (!npc.friendly && npc.SpawnedFromStatue && Region.AffectStatueSpawns && npc.netID != 488 && npc.catchItem == 0) ||
+                                    (!npc.friendly && !npc.SpawnedFromStatue && npc.netID != 488 && npc.catchItem == 0))
 								{
 									if (Region.TSRegion.InArea((int)(Main.npc[i].position.X / 16), (int)(Main.npc[i].position.Y / 16)))
 									{
