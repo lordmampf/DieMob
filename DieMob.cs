@@ -235,6 +235,11 @@ namespace DieMob
                                             npc.netDefaults(Region.ReplaceMobs[npc.netID]);
 											NetMessage.SendData((int)PacketTypes.NpcUpdate, -1, -1, "", i);
 										}
+										else if (Region.ReplaceMobs.ContainsKey(-1))
+										{
+											npc.netDefaults(Region.ReplaceMobs[-1]);
+											NetMessage.SendData((int)PacketTypes.NpcUpdate, -1, -1, "", i);
+										}
 										else if (Region.Type == RegionType.Repel)
 										{
 											Rectangle area = Region.TSRegion.Area;
