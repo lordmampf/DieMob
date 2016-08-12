@@ -232,7 +232,7 @@ namespace DieMob
 									{
 										if (Region.ReplaceMobs.ContainsKey(npc.netID))
 										{
-                                            npc.netDefaults(Region.ReplaceMobs[npc.netID]);
+											npc.netDefaults(Region.ReplaceMobs[npc.netID]);
 											NetMessage.SendData((int)PacketTypes.NpcUpdate, -1, -1, "", i);
 										}
 										else if (Region.ReplaceMobs.ContainsKey(-1))
@@ -254,10 +254,9 @@ namespace DieMob
 										}
 										else if (Region.Type == RegionType.Kill)
 										{
-											Main.npc[i].netDefaults(0);
-                                            Main.npc[i].active = false;
-                                            NetMessage.SendData((int)PacketTypes.NpcUpdate, -1, -1, "", i);
-                                        }
+											Main.npc[i] = new NPC();
+											NetMessage.SendData((int)PacketTypes.NpcUpdate, -1, -1, "", i);
+										}
 									}
 								}
 							}
