@@ -37,7 +37,7 @@ namespace DieMob
             AffectStatueSpawns = false;
         }
 	}
-	[ApiVersion(1, 23)]
+	[ApiVersion(1, 24)]
 	public class DieMobMain : TerrariaPlugin
 	{
 		private static IDbConnection db;
@@ -61,7 +61,7 @@ namespace DieMob
 		}
 		public override Version Version
 		{
-			get { return new Version("0.38"); }
+			get { return new Version("0.39"); }
 		}
 		public DieMobMain(Main game)
 			: base(game)
