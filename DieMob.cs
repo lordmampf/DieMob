@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Terraria;
 using TerrariaApi.Server;
 using TShockAPI;
@@ -14,7 +15,7 @@ using TShockAPI.Hooks;
 
 namespace DieMob
 {
-    public enum RegionType
+	public enum RegionType
 	{
 		Kill = 0,
 		Repel = 1,
@@ -37,7 +38,7 @@ namespace DieMob
             AffectStatueSpawns = false;
         }
 	}
-	[ApiVersion(1, 24)]
+	[ApiVersion(1, 25)]
 	public class DieMobMain : TerrariaPlugin
 	{
 		private static IDbConnection db;
@@ -61,7 +62,7 @@ namespace DieMob
 		}
 		public override Version Version
 		{
-			get { return new Version("0.39"); }
+			get { return Assembly.GetExecutingAssembly().GetName().Version; }
 		}
 		public DieMobMain(Main game)
 			: base(game)
@@ -235,9 +236,9 @@ namespace DieMob
 											npc.netDefaults(Region.ReplaceMobs[npc.netID]);
 											NetMessage.SendData((int)PacketTypes.NpcUpdate, -1, -1, "", i);
 										}
-										else if (Region.ReplaceMobs.ContainsKey(-1))
+										else if (Region.ReplaceMobs.ContainsKey(-100))
 										{
-											npc.netDefaults(Region.ReplaceMobs[-1]);
+											npc.netDefaults(Region.ReplaceMobs[-100]);
 											NetMessage.SendData((int)PacketTypes.NpcUpdate, -1, -1, "", i);
 										}
 										else if (Region.Type == RegionType.Repel)
