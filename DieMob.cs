@@ -1,4 +1,5 @@
-﻿using Mono.Data.Sqlite;
+﻿using Microsoft.Xna.Framework;
+using Mono.Data.Sqlite;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using System;
@@ -38,7 +39,7 @@ namespace DieMob
             AffectStatueSpawns = false;
         }
 	}
-	[ApiVersion(1, 25)]
+	[ApiVersion(1, 26)]
 	public class DieMobMain : TerrariaPlugin
 	{
 		private static IDbConnection db;
@@ -74,11 +75,11 @@ namespace DieMob
 
 			ServerApi.Hooks.GameUpdate.Register(this, OnUpdate);
 			ServerApi.Hooks.GameInitialize.Register(this, OnInitialize, 1);
-            RegionHooks.RegionDeleted += onRegionDelete;
+            RegionHooks.RegionDeleted += OnRegionDelete;
 
 		}
 
-        private void onRegionDelete(RegionHooks.RegionDeletedEventArgs args)
+        private void OnRegionDelete(RegionHooks.RegionDeletedEventArgs args)
         {
             if (RegionList.Exists(p => p.TSRegion.Name == args.Region.Name))
             {
@@ -93,7 +94,7 @@ namespace DieMob
 			{
 				ServerApi.Hooks.GameInitialize.Deregister(this, OnInitialize);
 				ServerApi.Hooks.GameUpdate.Deregister(this, OnUpdate);
-                RegionHooks.RegionDeleted -= onRegionDelete;
+                RegionHooks.RegionDeleted -= OnRegionDelete;
             }
 			base.Dispose(disposing);
 		}
@@ -446,9 +447,8 @@ namespace DieMob
 								{
 									if (args.Parameters.Count > 4 && (args.Parameters[3].ToLower() == "add" || args.Parameters[3].ToLower() == "del"))
 									{
-										int fromMobID, toMobID;
-										if (args.Parameters[3].ToLower() == "add" && args.Parameters.Count > 5 && int.TryParse(args.Parameters[4], out fromMobID) &&
-											int.TryParse(args.Parameters[5], out toMobID))
+										if (args.Parameters[3].ToLower() == "add" && args.Parameters.Count > 5 && int.TryParse(args.Parameters[4], out int fromMobID) &&
+											int.TryParse(args.Parameters[5], out int toMobID))
 										{
 											if (region.ReplaceMobs.ContainsKey(fromMobID))
 											{
