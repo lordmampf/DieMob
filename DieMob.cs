@@ -39,7 +39,7 @@ namespace DieMob
             AffectStatueSpawns = false;
         }
 	}
-	[ApiVersion(1, 26)]
+	[ApiVersion(2,0)]
 	public class DieMobMain : TerrariaPlugin
 	{
 		private static IDbConnection db;
@@ -447,8 +447,10 @@ namespace DieMob
 								{
 									if (args.Parameters.Count > 4 && (args.Parameters[3].ToLower() == "add" || args.Parameters[3].ToLower() == "del"))
 									{
-										if (args.Parameters[3].ToLower() == "add" && args.Parameters.Count > 5 && int.TryParse(args.Parameters[4], out int fromMobID) &&
-											int.TryParse(args.Parameters[5], out int toMobID))
+										int fromMobID;
+										int toMobID;
+										if (args.Parameters[3].ToLower() == "add" && args.Parameters.Count > 5 && int.TryParse(args.Parameters[4], out fromMobID) &&
+											int.TryParse(args.Parameters[5], out toMobID))
 										{
 											if (region.ReplaceMobs.ContainsKey(fromMobID))
 											{
