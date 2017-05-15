@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Terraria;
+using Terraria.Localization;
 using TerrariaApi.Server;
 using TShockAPI;
 using TShockAPI.DB;
@@ -39,7 +40,7 @@ namespace DieMob
             AffectStatueSpawns = false;
         }
 	}
-	[ApiVersion(2,0)]
+	[ApiVersion(2,1)]
 	public class DieMobMain : TerrariaPlugin
 	{
 		private static IDbConnection db;
@@ -234,13 +235,13 @@ namespace DieMob
 									{
 										if (Region.ReplaceMobs.ContainsKey(npc.netID))
 										{
-											npc.netDefaults(Region.ReplaceMobs[npc.netID]);
-											NetMessage.SendData((int)PacketTypes.NpcUpdate, -1, -1, "", i);
+											npc.SetDefaultsFromNetId(Region.ReplaceMobs[npc.netID]);
+											NetMessage.SendData((int)PacketTypes.NpcUpdate, -1, -1, NetworkText.Empty, i);
 										}
 										else if (Region.ReplaceMobs.ContainsKey(-100))
 										{
-											npc.netDefaults(Region.ReplaceMobs[-100]);
-											NetMessage.SendData((int)PacketTypes.NpcUpdate, -1, -1, "", i);
+											npc.SetDefaultsFromNetId(Region.ReplaceMobs[-100]);
+											NetMessage.SendData((int)PacketTypes.NpcUpdate, -1, -1, NetworkText.Empty, i);
 										}
 										else if (Region.Type == RegionType.Repel)
 										{
@@ -252,12 +253,12 @@ namespace DieMob
 											if (area.Right - (int)(npc.position.X / 16) < area.Width / 2)
 												xDir = 10;
 											npc.velocity = new Vector2(xDir * config.RepelPowerModifier, yDir * config.RepelPowerModifier);
-											NetMessage.SendData((int)PacketTypes.NpcUpdate, -1, -1, "", i);
+											NetMessage.SendData((int)PacketTypes.NpcUpdate, -1, -1, NetworkText.Empty, i);
 										}
 										else if (Region.Type == RegionType.Kill)
 										{
 											Main.npc[i] = new NPC();
-											NetMessage.SendData((int)PacketTypes.NpcUpdate, -1, -1, "", i);
+											NetMessage.SendData((int)PacketTypes.NpcUpdate, -1, -1, NetworkText.Empty, i);
 										}
 									}
 								}
